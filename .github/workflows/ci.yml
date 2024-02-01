@@ -46,7 +46,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint, build]
     steps:
-
       - name: Download Bundle Artifact
         uses: actions/download-artifact@v4
         with:
@@ -54,21 +53,20 @@ jobs:
           path: temp-artifact
       
       - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v1.0.0
           release_name: Release v1
-        outputs:
-          upload_url: ${{ steps.step_create_release.outputs.upload_url }}
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.step_upload_url.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./temp-artifact/bundle.zip
           asset_name: bundle.zip
           asset_content_type: application/zip
